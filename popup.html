@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            width: 300px;
+            height: 200px;
+        }
+        input {
+            width: 195px;
+        }
+        #add-button {
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <label for="server-ip-input">Price Tracker IP</label>
+    <div>
+        <input type="text" id="server-ip-input">
+    </div><br>
+
+    <label for="api-key-input">Api Key</label>
+    <div>
+        <input type="text" id="api-key-input">
+    </div><br>
+
+    <label for="price-input">Price XPath</label>
+    <div>
+        <input type="text" id="price-input">
+        <button id="price-button">Select Price</button>
+    </div><br>
+
+    <label for="stock-input">Stock XPath (Optional)</label>
+    <div>
+        <input type="text" id="stock-input">
+        <button id="stock-button">Select Stock</button>
+    </div><br>
+
+    <button id="add-button">Add watcher</button>
+
+    <script src="popup.js"></script>
+</body>
+</html>
