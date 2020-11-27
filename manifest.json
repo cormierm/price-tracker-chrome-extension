@@ -12,6 +12,9 @@
     },
     "default_popup": "popup.html"
   },
+  "options_ui": {
+    "page": "options.html"
+  },
   "icons": {
     "16": "images/get_started16.png",
     "32": "images/get_started32.png",

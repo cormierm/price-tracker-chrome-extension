@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        label, input, button {
+            display: block;
+        }
+        input {
+            width: 98%;
+            margin-bottom: 10px;
+        }
+        button {
+            float: right;
+            margin: 8px;
+        }
+    </style>
+</head>
+<body>
+<form>
+    <label for="server-ip">Server IP</label>
+    <input id="server-ip" type="text" name="server-ip" required>
+
+    <label for="email">Email</label>
+    <input id="email" type="email" name="email" required>
+
+    <label for="api-key">Api Key</label>
+    <input id="api-key" type="text" name="api-key" required>
+
+    <button type="submit">Save</button>
+</form>
+
+<script type="module" src="options.js"></script>
+
+</body>
+</html>
