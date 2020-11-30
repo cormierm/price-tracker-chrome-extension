@@ -3,39 +3,56 @@
 <head>
     <style>
         body {
+            display: flex;
+            flex-direction: column;
             width: 300px;
             height: 200px;
         }
-        input {
-            width: 195px;
-        }
-        #add-button {
+        #options-button {
             float: right;
+        }
+        .control {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px
+        }
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        .control input {
+            flex: 1;
         }
     </style>
 </head>
 <body>
-    <label for="server-ip-input">Price Tracker IP</label>
     <div>
-        <input type="text" id="server-ip-input">
-    </div><br>
+        <button id="options-button">Options</button>
+    </div>
 
-    <label for="api-key-input">Api Key</label>
-    <div>
-        <input type="text" id="api-key-input">
-    </div><br>
+    <label for="name">Name</label>
+    <input class="mb-10" type="text" id="name" required>
 
     <label for="price-input">Price XPath</label>
-    <div>
-        <input type="text" id="price-input">
+    <div class="control">
+        <input type="text" id="price-input" required>
         <button id="price-button">Select Price</button>
-    </div><br>
+    </div>
 
     <label for="stock-input">Stock XPath (Optional)</label>
-    <div>
+    <div class="control">
         <input type="text" id="stock-input">
         <button id="stock-button">Select Stock</button>
-    </div><br>
+    </div>
+
+    <label>Html Client</label>
+    <div class="mb-10">
+        <input type="radio" id="browsershot" name="client" value="browsershot" checked>
+        <label for="browsershot">Browsershot</label>
+        <input type="radio" id="curl" name="client" value="curl">
+        <label for="curl">Curl</label>
+        <input type="radio" id="guzzle" name="client" value="guzzle">
+        <label for="guzzle">Guzzle</label>
+    </div>
 
     <button id="add-button">Add watcher</button>
 

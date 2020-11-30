@@ -68,17 +68,19 @@ function addPriceWatcher() {
     function getStorageValue(key) {
         return new Promise((resolve, reject) => chrome.storage.sync.get(key, result => resolve(result)));
     }
+    const settings = getStorageValue('settings');
     const postData = {
-        xpathPrice: document.getElementById('price-input').value,
-        xpathStock: document.getElementById('stock-input').value,
+        email: settings.email,
+        api_key: settings.apiKey,
+        xpath_price: document.getElementById('price-input').value,
+        xpath_stock: document.getElementById('stock-input').value,
         ...getStorageValue('url'),
-        apiKey: 'some-key',
     };
 
 
-    // fetch("/post/data/here", {
+    // fetch(`${settings.ip}/api/watcher`, {
     //     method: "POST",
-    //     body: JSON.stringify(data)
+    //     body: postData
     // }).then(res => {
     //     console.log("Request complete! response:", res);
     // });
@@ -89,20 +91,34 @@ document.getElementById('add-button').addEventListener('click', () => {
     addPriceWatcher()
 });
 
-chrome.tabs.query(
-    {active: true, lastFocusedWindow: true, currentWindow: true},
-    tabs => {
-        chrome.storage.sync.set({url: tabs[0].url});
-    }
-);
+function storeCurrentTabUrl() {
+    chrome.tabs.query(
+        {active: true, lastFocusedWindow: true, currentWindow: true},
+        tabs => {
+            chrome.storage.sync.set({url: tabs[0].url});
+        }
+    );
+}
 
-addUpdateStorageListenerToInput('server-ip-input', 'serverIp')
-addUpdateStorageListenerToInput('api-key-input', 'apiKey')
+function loadPageTitle() {
+    chrome.tabs.query(
+        {active: true, lastFocusedWindow: true, currentWindow: true},
+        tabs => {
+            document.getElementById('name').value = tabs[0].title
+        }
+    );
+}
+
+document.getElementById('options-button').addEventListener('click', () => {
+    chrome.runtime.openOptionsPage()
+})
+
+storeCurrentTabUrl();
+loadPageTitle();
+
 addUpdateStorageListenerToInput('price-input', 'xpathPrice')
 addUpdateStorageListenerToInput('stock-input', 'xpathStock')
 
-setInputFromStorageKey('server-ip-input', 'serverIp');
-setInputFromStorageKey('api-key-input', 'apiKey');
 setInputFromStorageKey('price-input', 'xpathPrice');
 setInputFromStorageKey('stock-input', 'xpathStock');
 
