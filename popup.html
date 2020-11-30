@@ -14,7 +14,6 @@
         .control {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px
         }
         .mb-10 {
             margin-bottom: 10px;
@@ -25,7 +24,8 @@
     </style>
 </head>
 <body>
-    <div>
+    <div class="mb-10">
+        <button id="auto-fill-button">AutoFill</button>
         <button id="options-button">Options</button>
     </div>
 
@@ -33,16 +33,25 @@
     <input class="mb-10" type="text" id="name" required>
 
     <label for="price-input">Price XPath</label>
-    <div class="control">
-        <input type="text" id="price-input" required>
+    <div class="control mb-10">
+        <input type="text" id="price-input" name="xpath_price" required>
         <button id="price-button">Select Price</button>
     </div>
 
-    <label for="stock-input">Stock XPath (Optional)</label>
+    <label for="stock-input">Stock XPath And Text (Optional)</label>
     <div class="control">
-        <input type="text" id="stock-input">
+        <input type="text" id="stock-input" name="xpath_stock">
         <button id="stock-button">Select Stock</button>
     </div>
+
+    <div>
+        <input type="radio" id="contains" name="stock_contains" value="true" checked>
+        <label for="contains">Contains</label>
+        <input type="radio" id="does-not-contain" name="stock_contains" value="false">
+        <label for="does-not-contain">Does not contain</label>
+    </div>
+
+    <input class="mb-10" type="text" id="stock-text" name="stock_text">
 
     <label>Html Client</label>
     <div class="mb-10">
