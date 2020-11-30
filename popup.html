@@ -2,22 +2,26 @@
 <html>
 <head>
     <style>
-        body {
+        form {
             display: flex;
             flex-direction: column;
             width: 300px;
             height: 200px;
         }
+
         #options-button {
             float: right;
         }
+
         .control {
             display: flex;
             justify-content: space-between;
         }
+
         .mb-10 {
             margin-bottom: 10px;
         }
+
         .control input {
             flex: 1;
         }
@@ -29,42 +33,44 @@
         <button id="options-button">Options</button>
     </div>
 
-    <label for="name">Name</label>
-    <input class="mb-10" type="text" id="name" required>
+    <form>
+        <label for="name">Name</label>
+        <input class="mb-10" type="text" id="name" required>
 
-    <label for="price-input">Price XPath</label>
-    <div class="control mb-10">
-        <input type="text" id="price-input" name="xpath_price" required>
-        <button id="price-button">Select Price</button>
-    </div>
+        <label for="xpath-price">Price XPath</label>
+        <div class="control mb-10">
+            <input type="text" id="xpath-price" name="xpath_price" required>
+            <button id="price-button">Select Price</button>
+        </div>
 
-    <label for="stock-input">Stock XPath And Text (Optional)</label>
-    <div class="control">
-        <input type="text" id="stock-input" name="xpath_stock">
-        <button id="stock-button">Select Stock</button>
-    </div>
+        <label for="xpath-stock">Stock XPath And Text (Optional)</label>
+        <div class="control">
+            <input type="text" id="xpath-stock" name="xpath_stock">
+            <button id="stock-button">Select Stock</button>
+        </div>
 
-    <div>
-        <input type="radio" id="contains" name="stock_contains" value="true" checked>
-        <label for="contains">Contains</label>
-        <input type="radio" id="does-not-contain" name="stock_contains" value="false">
-        <label for="does-not-contain">Does not contain</label>
-    </div>
+        <div>
+            <input type="radio" id="contains" name="stock_contains" value="true" checked>
+            <label for="contains">Contains</label>
+            <input type="radio" id="does-not-contain" name="stock_contains" value="false">
+            <label for="does-not-contain">Does not contain</label>
+        </div>
 
-    <input class="mb-10" type="text" id="stock-text" name="stock_text">
+        <input class="mb-10" type="text" id="stock-text" name="stock_text">
 
-    <label>Html Client</label>
-    <div class="mb-10">
-        <input type="radio" id="browsershot" name="client" value="browsershot" checked>
-        <label for="browsershot">Browsershot</label>
-        <input type="radio" id="curl" name="client" value="curl">
-        <label for="curl">Curl</label>
-        <input type="radio" id="guzzle" name="client" value="guzzle">
-        <label for="guzzle">Guzzle</label>
-    </div>
+        <label>Html Client</label>
+        <div class="mb-10">
+            <input type="radio" id="browsershot" name="client" value="browsershot" checked>
+            <label for="browsershot">Browsershot</label>
+            <input type="radio" id="curl" name="client" value="curl">
+            <label for="curl">Curl</label>
+            <input type="radio" id="guzzle" name="client" value="guzzle">
+            <label for="guzzle">Guzzle</label>
+        </div>
 
-    <button id="add-button">Add watcher</button>
+        <button id="add-button" type="submit">Add watcher</button>
 
-    <script src="popup.js"></script>
+        <script src="popup.js"></script>
+    </form>
 </body>
 </html>

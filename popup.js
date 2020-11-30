@@ -64,31 +64,36 @@ function addXPathListener(buttonId, storageKey) {
     });
 }
 
-function addPriceWatcher() {
-    function getStorageValue(key) {
+document.querySelector('form').addEventListener('submit', async (event) => {
+    async function getStorageValue(key) {
         return new Promise((resolve, reject) => chrome.storage.sync.get(key, result => resolve(result)));
     }
-    const settings = getStorageValue('settings');
+
+    event.preventDefault()
+    const formData = new FormData(event.target)
+
     const postData = {
-        email: settings.email,
-        api_key: settings.apiKey,
-        xpath_price: document.getElementById('price-input').value,
-        xpath_stock: document.getElementById('stock-input').value,
-        ...getStorageValue('url'),
+        ...await getStorageValue('url'),
+        xpath_price: formData.get('xpath_price'),
+        xpath_stock: formData.get('xpath_stock'),
+        stock_contains: formData.get('stock_contains'),
+        stock_text: formData.get('stock_text'),
+        client: formData.get('client'),
     };
 
+    const settings = await getStorageValue('settings');
+    console.log(settings);
 
-    // fetch(`${settings.ip}/api/watcher`, {
-    //     method: "POST",
-    //     body: postData
-    // }).then(res => {
-    //     console.log("Request complete! response:", res);
-    // });
-    console.log(postData);
-}
+    let headers = new Headers();
+    headers.set('Authorization', 'Basic ' + btoa(settings.email + ":" + settings.apiKey));
 
-document.getElementById('add-button').addEventListener('click', () => {
-    addPriceWatcher()
+    fetch(`http://${settings.ip}/api/watcher`, {
+        method: "POST",
+        body: postData,
+        headers
+    }).then(res => {
+        console.log("Request complete! response:", res);
+    });
 });
 
 function storeCurrentTabUrl() {
@@ -116,11 +121,13 @@ document.getElementById('options-button').addEventListener('click', () => {
 storeCurrentTabUrl();
 loadPageTitle();
 
-addUpdateStorageListenerToInput('price-input', 'xpathPrice')
-addUpdateStorageListenerToInput('stock-input', 'xpathStock')
+addUpdateStorageListenerToInput('xpath-price', 'xpathPrice')
+addUpdateStorageListenerToInput('xpath-stock', 'xpathStock')
+addUpdateStorageListenerToInput('stock-text', 'stockText')
 
-setInputFromStorageKey('price-input', 'xpathPrice');
-setInputFromStorageKey('stock-input', 'xpathStock');
+setInputFromStorageKey('xpath-price', 'xpathPrice');
+setInputFromStorageKey('xpath-stock', 'xpathStock');
+setInputFromStorageKey('stock-text', 'stockText');
 
 addXPathListener('price-button', 'xpathPrice');
 addXPathListener('stock-button', 'xpathStock');
