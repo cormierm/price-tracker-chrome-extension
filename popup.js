@@ -197,6 +197,53 @@ document.getElementById('auto-fill').addEventListener('click', async () => {
     });
 })
 
+document.getElementById('check-button').addEventListener('click', async (event) => {
+    async function getStorageValue(key) {
+        return new Promise((resolve, reject) => chrome.storage.sync.get(key, result => resolve(result)));
+    }
+
+    const {settings} = await getStorageValue('settings')
+
+    const formData = new FormData(document.querySelector('form'))
+
+    event.target.disabled = true;
+
+    fetch(`http://${settings.ip}/api/watcher/check`, {
+        method: "POST",
+        body: JSON.stringify({
+            ...await getStorageValue('url'),
+            xpath_value: formData.get('xpath_price'),
+            xpath_stock: formData.get('xpath_stock'),
+            stock_contains: formData.get('stock_contains') === 'true',
+            stock_text: formData.get('stock_text'),
+            client: formData.get('client'),
+        }),
+        headers: {
+            Authorization: 'Basic ' + btoa(settings.email + ":" + settings.apiKey),
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+        }
+    }).then(response => {
+        if (response.status === 422) {
+            response.json().then((error) => alert('Validation error:\n' + Object.values(error.errors).join('\n')))
+        } else if (response.status !== 200) {
+            alert(`Error: ${response.status} ${response.statusText}`)
+        } else {
+            response.json().then((res) => {
+                alert(`Found the following information:
+                
+Price: ${res.value}
+Has Stock: ${res.has_stock}
+
+XPath Query Price InnerText: ${res.raw_value}
+XPath Query Stock InnerText: ${res.raw_stock_value}`);
+            })
+        }
+    }).finally(() => {
+        event.target.disabled = false;
+    });
+})
+
 storeCurrentTabUrl();
 loadPageTitle();
 loadInputsFromStorage();
