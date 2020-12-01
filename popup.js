@@ -1,11 +1,26 @@
-function setInputFromStorageKey(elementId, storageKey) {
-    chrome.storage.sync.get(storageKey, function (data) {
-        document.getElementById(elementId).value = data[storageKey] || '';
+function loadInputsFromStorage() {
+    chrome.storage.sync.get(['xpathPrice', 'xpathStock', 'stockText', 'stockContains', 'client'], function (storage) {
+        console.log(storage)
+        document.getElementById('xpath-price').value = storage.xpathPrice || '';
+        document.getElementById('xpath-stock').value = storage.xpathStock || '';
+        document.getElementById('stock-text').value = storage.stockText || '';
+        document.getElementById('contains').checked = storage.stockContains === "true";
+        document.getElementById('does-not-contain').checked = storage.stockContains === "false";
+        document.getElementById('browsershot').checked = storage.client === 'browsershot' ? true : false;
+        document.getElementById('curl').checked = storage.client === 'curl' ? true : false;
+        document.getElementById('guzzle').checked = storage.client === 'guzzle' ? true : false;
     });
 }
 
 function addUpdateStorageListenerToInput(elementId, storageKey) {
     document.getElementById(elementId).addEventListener('input', (event) => {
+        chrome.storage.sync.set({[storageKey]: event.target.value});
+    });
+}
+
+function addUpdateStorageListenerToRadio(elementId, storageKey) {
+    document.getElementById(elementId).addEventListener('change', (event) => {
+        console.log(event.target.value)
         chrome.storage.sync.set({[storageKey]: event.target.value});
     });
 }
@@ -82,6 +97,7 @@ document.querySelector('form').addEventListener('submit', async (event) => {
         stock_contains: formData.get('stock_contains') === 'true',
         stock_text: formData.get('stock_text'),
         client: formData.get('client'),
+        interval_id: formData.get('interval_id'),
     };
 
     fetch(`http://${settings.ip}/api/watcher`, {
@@ -104,6 +120,8 @@ document.querySelector('form').addEventListener('submit', async (event) => {
                 xpathPrice: '',
                 xpathStock: '',
                 stockText: '',
+                stockContains: true,
+                client: 'browsershot'
             });
 
             window.close()
@@ -166,6 +184,14 @@ document.getElementById('auto-fill').addEventListener('click', async () => {
                 document.getElementById('browsershot').checked = res.client === 'browsershot' ? true : false;
                 document.getElementById('curl').checked = res.client === 'curl' ? true : false;
                 document.getElementById('guzzle').checked = res.client === 'guzzle' ? true : false;
+
+                chrome.storage.sync.set({
+                    xpathPrice: res.xpath_value,
+                    xpathStock: res.xpath_stock,
+                    stockText: res.stock_text,
+                    stockContains: res.stock_contains ? 'true' : 'false',
+                    client: res.client,
+                });
             })
         }
     });
@@ -173,14 +199,17 @@ document.getElementById('auto-fill').addEventListener('click', async () => {
 
 storeCurrentTabUrl();
 loadPageTitle();
+loadInputsFromStorage();
 
 addUpdateStorageListenerToInput('xpath-price', 'xpathPrice')
 addUpdateStorageListenerToInput('xpath-stock', 'xpathStock')
 addUpdateStorageListenerToInput('stock-text', 'stockText')
 
-setInputFromStorageKey('xpath-price', 'xpathPrice');
-setInputFromStorageKey('xpath-stock', 'xpathStock');
-setInputFromStorageKey('stock-text', 'stockText');
+addUpdateStorageListenerToRadio('browsershot', 'client');
+addUpdateStorageListenerToRadio('curl', 'client');
+addUpdateStorageListenerToRadio('guzzle', 'client');
+addUpdateStorageListenerToRadio('contains', 'stockContains');
+addUpdateStorageListenerToRadio('does-not-contain', 'stockContains');
 
 addXPathListener('price-button', 'xpathPrice');
 addXPathListener('stock-button', 'xpathStock');
