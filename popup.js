@@ -20,11 +20,10 @@ function addXPathListener(buttonId, storageKey) {
             document.addEventListener('click', (event) => {
                 function createXPathFromElement(elm) {
                     const allNodes = document.getElementsByTagName('*');
-                    for (var segs = []; elm && elm.nodeType == 1; elm = elm.parentNode)
-                    {
+                    for (var segs = []; elm && elm.nodeType == 1; elm = elm.parentNode) {
                         if (elm.hasAttribute('id')) {
                             let uniqueIdCount = 0;
-                            for (let n = 0;n  < allNodes.length; n++) {
+                            for (let n = 0; n < allNodes.length; n++) {
                                 if (allNodes[n].hasAttribute('id') && allNodes[n].id == elm.id) uniqueIdCount++;
                                 if (uniqueIdCount > 1) break;
                             }
@@ -39,7 +38,7 @@ function addXPathListener(buttonId, storageKey) {
                         } else {
                             let i = 0
                             for (i = 1, sib = elm.previousSibling; sib; sib = sib.previousSibling) {
-                                if (sib.localName == elm.localName)  i++;
+                                if (sib.localName == elm.localName) i++;
                             }
                             segs.unshift(elm.localName.toLowerCase() + '[' + i + ']');
                         }
@@ -65,11 +64,14 @@ function addXPathListener(buttonId, storageKey) {
 }
 
 document.querySelector('form').addEventListener('submit', async (event) => {
+    event.preventDefault()
+
     async function getStorageValue(key) {
         return new Promise((resolve, reject) => chrome.storage.sync.get(key, result => resolve(result)));
     }
 
-    event.preventDefault()
+    const {settings} = await getStorageValue('settings');
+
     const formData = new FormData(event.target)
 
     const postData = {
@@ -77,12 +79,10 @@ document.querySelector('form').addEventListener('submit', async (event) => {
         name: formData.get('name'),
         query: formData.get('xpath_price'),
         xpath_stock: formData.get('xpath_stock'),
-        stock_contains: formData.get('stock_contains'),
+        stock_contains: formData.get('stock_contains') === 'true',
         stock_text: formData.get('stock_text'),
         client: formData.get('client'),
     };
-
-    const {settings} = await getStorageValue('settings');
 
     fetch(`http://${settings.ip}/api/watcher`, {
         method: "POST",
@@ -93,19 +93,21 @@ document.querySelector('form').addEventListener('submit', async (event) => {
             Accept: 'application/json'
         }
     }).then(response => {
-        console.log("Request complete! response:", response)
-
         if (response.status === 422) {
-            response.json().then((error) => alert(Object.values(error.errors).join('\n')))
-            return;
-        }
-
-        if (response.status !== 200) {
+            response.json().then((error) => alert('Validation error:\n' + Object.values(error.errors).join('\n')))
+        } else if (response.status !== 200) {
             alert(`Error: ${response.status} ${response.statusText}`)
-            return;
-        }
+        } else {
+            alert('Successfully added watcher')
 
-        alert('Successfully added watcher')
+            chrome.storage.sync.set({
+                xpathPrice: '',
+                xpathStock: '',
+                stockText: '',
+            });
+
+            window.close()
+        }
     });
 });
 
@@ -129,6 +131,44 @@ function loadPageTitle() {
 
 document.getElementById('options-button').addEventListener('click', () => {
     chrome.runtime.openOptionsPage()
+})
+
+document.getElementById('auto-fill').addEventListener('click', async () => {
+    async function getStorageValue(key) {
+        return new Promise((resolve, reject) => chrome.storage.sync.get(key, result => resolve(result)));
+    }
+
+    const {settings} = await getStorageValue('settings');
+    fetch(`http://${settings.ip}/api/template/search-by-url`, {
+        method: "POST",
+        body: JSON.stringify({
+            ...await getStorageValue('url'),
+        }),
+        headers: {
+            Authorization: 'Basic ' + btoa(settings.email + ":" + settings.apiKey),
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+        }
+    }).then(response => {
+        if (response.status === 404) {
+            alert('No template found or server ip is not configured properly.')
+        } else if (response.status === 422) {
+            response.json().then((error) => alert('Validation error:\n' + Object.values(error.errors).join('\n')))
+        } else if (response.status !== 200) {
+            alert(`Error: ${response.status} ${response.statusText}`)
+        } else {
+            response.json().then((res) => {
+                document.getElementById('xpath-price').value = res.xpath_value;
+                document.getElementById('xpath-stock').value = res.xpath_stock;
+                document.getElementById('stock-text').value = res.stock_text;
+                document.getElementById('contains').checked = res.stock_contains;
+                document.getElementById('does-not-contain').checked = !res.stock_contains;
+                document.getElementById('browsershot').checked = res.client === 'browsershot' ? true : false;
+                document.getElementById('curl').checked = res.client === 'curl' ? true : false;
+                document.getElementById('guzzle').checked = res.client === 'guzzle' ? true : false;
+            })
+        }
+    });
 })
 
 storeCurrentTabUrl();

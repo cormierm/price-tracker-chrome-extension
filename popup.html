@@ -6,7 +6,6 @@
             display: flex;
             flex-direction: column;
             width: 300px;
-            height: 200px;
         }
 
         #options-button {
@@ -29,23 +28,23 @@
 </head>
 <body>
     <div class="mb-10">
-        <button id="auto-fill-button">AutoFill</button>
+        <button id="auto-fill">AutoFill</button>
         <button id="options-button">Options</button>
     </div>
 
     <form>
         <label for="name">Name</label>
-        <input class="mb-10" type="text" id="name" name="name" required>
+        <input class="mb-10" type="text" id="name" name="name" maxlength="191" required>
 
         <label for="xpath-price">Price XPath</label>
         <div class="control mb-10">
-            <input type="text" id="xpath-price" name="xpath_price" required>
+            <input type="text" id="xpath-price" name="xpath_price"  maxlength="191" required>
             <button id="price-button">Select Price</button>
         </div>
 
         <label for="xpath-stock">Stock XPath And Text (Optional)</label>
         <div class="control">
-            <input type="text" id="xpath-stock" name="xpath_stock">
+            <input type="text" id="xpath-stock" name="xpath_stock" maxlength="191">
             <button id="stock-button">Select Stock</button>
         </div>
 
@@ -56,7 +55,7 @@
             <label for="does-not-contain">Does not contain</label>
         </div>
 
-        <input class="mb-10" type="text" id="stock-text" name="stock_text">
+        <input class="mb-10" type="text" id="stock-text" name="stock_text" maxlength="191">
 
         <label>Html Client</label>
         <div class="mb-10">
@@ -68,7 +67,7 @@
             <label for="guzzle">Guzzle</label>
         </div>
 
-        <button id="add-button" type="submit">Add watcher</button>
+        <button id="add-button mb-10" type="submit">Add watcher</button>
 
         <script src="popup.js"></script>
     </form>
