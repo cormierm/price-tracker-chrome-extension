@@ -74,25 +74,38 @@ document.querySelector('form').addEventListener('submit', async (event) => {
 
     const postData = {
         ...await getStorageValue('url'),
-        xpath_price: formData.get('xpath_price'),
+        name: formData.get('name'),
+        query: formData.get('xpath_price'),
         xpath_stock: formData.get('xpath_stock'),
         stock_contains: formData.get('stock_contains'),
         stock_text: formData.get('stock_text'),
         client: formData.get('client'),
     };
 
-    const settings = await getStorageValue('settings');
-    console.log(settings);
-
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + btoa(settings.email + ":" + settings.apiKey));
+    const {settings} = await getStorageValue('settings');
 
     fetch(`http://${settings.ip}/api/watcher`, {
         method: "POST",
-        body: postData,
-        headers
-    }).then(res => {
-        console.log("Request complete! response:", res);
+        body: JSON.stringify(postData),
+        headers: {
+            Authorization: 'Basic ' + btoa(settings.email + ":" + settings.apiKey),
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+        }
+    }).then(response => {
+        console.log("Request complete! response:", response)
+
+        if (response.status === 422) {
+            response.json().then((error) => alert(Object.values(error.errors).join('\n')))
+            return;
+        }
+
+        if (response.status !== 200) {
+            alert(`Error: ${response.status} ${response.statusText}`)
+            return;
+        }
+
+        alert('Successfully added watcher')
     });
 });
 
