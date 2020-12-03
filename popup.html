@@ -24,12 +24,16 @@
         .control input {
             flex: 1;
         }
+
+        #check-button {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
     <div class="mb-10">
         <button id="auto-fill">AutoFill</button>
-        <button id="options-button">Options</button>
+        <button id="options-button">&#9881;</button>
     </div>
 
     <form>
@@ -39,13 +43,13 @@
         <label for="xpath-price">Price XPath</label>
         <div class="control mb-10">
             <input type="text" id="xpath-price" name="xpath_price"  maxlength="191" required>
-            <button id="price-button">Select Price</button>
+            <button id="price-button">&#10012;</button>
         </div>
 
         <label for="xpath-stock">Stock XPath And Text (Optional)</label>
         <div class="control">
             <input type="text" id="xpath-stock" name="xpath_stock" maxlength="191">
-            <button id="stock-button">Select Stock</button>
+            <button id="stock-button">&#10012;</button>
         </div>
 
         <div>

@@ -33,6 +33,8 @@ form.addEventListener('submit', (event) => {
     }
 
     chrome.storage.sync.set(payload);
+
+    window.close()
 });
 
 window.addEventListener('DOMContentLoaded', () => {
