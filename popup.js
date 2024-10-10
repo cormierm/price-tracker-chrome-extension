@@ -1,14 +1,23 @@
 function loadInputsFromStorage() {
-    chrome.storage.sync.get(['xpathPrice', 'xpathStock', 'stockText', 'stockContains', 'client'], function (storage) {
+    chrome.storage.sync.get(['priceQuery', 'priceQueryType', 'stockQuery', 'stockQueryType', 'stockText', 'stockContains', 'client'], function (storage) {
         console.log(storage)
-        document.getElementById('xpath-price').value = storage.xpathPrice || '';
-        document.getElementById('xpath-stock').value = storage.xpathStock || '';
+        document.getElementById('price-query').value = storage.priceQuery || '';
+        document.getElementById('price-query-type-xpath').checked = storage.priceQueryType === 'xpath';
+        document.getElementById('price-query-type-selector').checked = storage.priceQueryType === 'selector';
+        document.getElementById('price-query-type-regex').checked = storage.priceQueryType === 'regex';
+
+        document.getElementById('stock-query').value = storage.stockQuery || '';
+        document.getElementById('stock-query-type-xpath').checked = storage.stockQueryType === 'xpath';
+        document.getElementById('stock-query-type-selector').checked = storage.stockQueryType === 'selector';
+        document.getElementById('stock-query-type-regex').checked = storage.stockQueryType === 'regex';
         document.getElementById('stock-text').value = storage.stockText || '';
         document.getElementById('contains').checked = storage.stockContains === "true";
         document.getElementById('does-not-contain').checked = storage.stockContains === "false";
-        document.getElementById('browsershot').checked = storage.client === 'browsershot' ? true : false;
-        document.getElementById('curl').checked = storage.client === 'curl' ? true : false;
-        document.getElementById('guzzle').checked = storage.client === 'guzzle' ? true : false;
+
+        document.getElementById('browsershot').checked = storage.client === 'browsershot';
+        document.getElementById('curl').checked = storage.client === 'curl';
+        document.getElementById('guzzle').checked = storage.client === 'guzzle';
+        document.getElementById('puppeteer').checked = storage.client === 'puppeteer';
     });
 }
 
@@ -92,10 +101,12 @@ document.querySelector('form').addEventListener('submit', async (event) => {
     const postData = {
         ...await getStorageValue('url'),
         name: formData.get('name'),
-        query: formData.get('xpath_price'),
-        xpath_stock: formData.get('xpath_stock'),
-        stock_contains: formData.get('stock_contains') === 'true',
-        stock_text: formData.get('stock_text'),
+        price_query: formData.get('price-query'),
+        price_query_type: formData.get('price-query-type'),
+        stock_query: formData.get('stock-query'),
+        stock_query_type: formData.get('stock-query-type'),
+        stock_contains: formData.get('stock-contains') === 'true',
+        stock_text: formData.get('stock-text'),
         client: formData.get('client'),
         interval_id: formData.get('interval_id'),
     };
@@ -117,8 +128,10 @@ document.querySelector('form').addEventListener('submit', async (event) => {
             alert('Successfully added watcher')
 
             chrome.storage.sync.set({
-                xpathPrice: '',
-                xpathStock: '',
+                priceQuery: '',
+                priceQueryType: 'xpath',
+                stockQuery: '',
+                stockQueryType: 'xpath',
                 stockText: '',
                 stockContains: true,
                 client: 'browsershot'
@@ -176,18 +189,29 @@ document.getElementById('auto-fill').addEventListener('click', async () => {
             alert(`Error: ${response.status} ${response.statusText}`)
         } else {
             response.json().then((res) => {
-                document.getElementById('xpath-price').value = res.xpath_value;
-                document.getElementById('xpath-stock').value = res.xpath_stock;
+                document.getElementById('price-query').value = res.price_query;
+                document.getElementById('price-query-type-xpath').checked = res.price_query_type === 'xpath';
+                document.getElementById('price-query-type-selector').checked = res.price_query_type === 'selector';
+                document.getElementById('price-query-type-regex').checked = res.price_query_type === 'regex';
+
+                document.getElementById('stock-query').value = res.stock_query;
+                document.getElementById('stock-query-type-xpath').checked = res.stock_query_type === 'xpath';
+                document.getElementById('stock-query-type-selector').checked = res.stock_query_type === 'selector';
+                document.getElementById('stock-query-type-regex').checked = res.stock_query_type === 'regex';
                 document.getElementById('stock-text').value = res.stock_text;
                 document.getElementById('contains').checked = res.stock_contains;
                 document.getElementById('does-not-contain').checked = !res.stock_contains;
-                document.getElementById('browsershot').checked = res.client === 'browsershot' ? true : false;
-                document.getElementById('curl').checked = res.client === 'curl' ? true : false;
-                document.getElementById('guzzle').checked = res.client === 'guzzle' ? true : false;
+
+                document.getElementById('browsershot').checked = res.client === 'browsershot';
+                document.getElementById('curl').checked = res.client === 'curl';
+                document.getElementById('guzzle').checked = res.client === 'guzzle';
+                document.getElementById('puppeteer').checked = res.client === 'puppeteer';
 
                 chrome.storage.sync.set({
-                    xpathPrice: res.xpath_value,
-                    xpathStock: res.xpath_stock,
+                    priceQuery: res.price_query,
+                    priceQueryType: res.price_query_type,
+                    stockQuery: res.stock_query,
+                    stockQueryType: res.stock_query_type,
                     stockText: res.stock_text,
                     stockContains: res.stock_contains ? 'true' : 'false',
                     client: res.client,
@@ -207,15 +231,16 @@ document.getElementById('check-button').addEventListener('click', async (event) 
     const formData = new FormData(document.querySelector('form'))
 
     event.target.disabled = true;
-
     fetch(`http://${settings.ip}/api/watcher/check`, {
         method: "POST",
         body: JSON.stringify({
             ...await getStorageValue('url'),
-            xpath_value: formData.get('xpath_price'),
-            xpath_stock: formData.get('xpath_stock'),
-            stock_contains: formData.get('stock_contains') === 'true',
-            stock_text: formData.get('stock_text'),
+            price_query: formData.get('price-query'),
+            price_query_type: formData.get('price-query-type'),
+            stock_query: formData.get('stock-query'),
+            stock_query_type: formData.get('stock-query-type'),
+            stock_contains: formData.get('stock-contains') === 'true',
+            stock_text: formData.get('stock-text'),
             client: formData.get('client'),
         }),
         headers: {
@@ -248,15 +273,24 @@ storeCurrentTabUrl();
 loadPageTitle();
 loadInputsFromStorage();
 
-addUpdateStorageListenerToInput('xpath-price', 'xpathPrice')
-addUpdateStorageListenerToInput('xpath-stock', 'xpathStock')
+addUpdateStorageListenerToInput('price-query', 'priceQuery')
+addUpdateStorageListenerToRadio('price-query-type-xpath', 'priceQueryType');
+addUpdateStorageListenerToRadio('price-query-type-selector', 'priceQueryType');
+addUpdateStorageListenerToRadio('price-query-type-regex', 'priceQueryType');
+
+addUpdateStorageListenerToInput('stock-query', 'stockQuery')
+addUpdateStorageListenerToRadio('stock-query-type-xpath', 'stockQueryType');
+addUpdateStorageListenerToRadio('stock-query-type-selector', 'stockQueryType');
+addUpdateStorageListenerToRadio('stock-query-type-regex', 'stockQueryType');
 addUpdateStorageListenerToInput('stock-text', 'stockText')
 
 addUpdateStorageListenerToRadio('browsershot', 'client');
 addUpdateStorageListenerToRadio('curl', 'client');
 addUpdateStorageListenerToRadio('guzzle', 'client');
+addUpdateStorageListenerToRadio('puppeteer', 'client');
+
 addUpdateStorageListenerToRadio('contains', 'stockContains');
 addUpdateStorageListenerToRadio('does-not-contain', 'stockContains');
 
-addXPathListener('price-button', 'xpathPrice');
-addXPathListener('stock-button', 'xpathStock');
+addXPathListener('price-button', 'priceQuery');
+addXPathListener('stock-button', 'stockQuery');

@@ -8,8 +8,26 @@
             width: 300px;
         }
 
+        button {
+            cursor: pointer;
+        }
+
         #options-button {
             float: right;
+        }
+
+        #auto-fill {
+            padding: 6px 8px;
+            border: none;
+            background-color: rgb(59 130 246);
+            color: white;
+            font-size: 1.2em;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        #auto-fill:hover {
+            background-color: rgb(37 99 235);
         }
 
         .control {
@@ -31,67 +49,110 @@
     </style>
 </head>
 <body>
-    <div class="mb-10">
-        <button id="auto-fill">AutoFill</button>
-        <button id="options-button">&#9881;</button>
+<div class="mb-10">
+    <button id="auto-fill">AutoFill</button>
+    <button id="options-button">
+        <svg style="width: 15px; height: 15px; padding-top: 4px;" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 512 512">
+            <path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/>
+        </svg>
+    </button>
+</div>
+
+<form>
+    <label for="name">Name</label>
+    <input class="mb-10" type="text" id="name" name="name" maxlength="191" required>
+
+    <label for="price-query">Price Query</label>
+    <div>
+        <label>
+            <input type="radio" id="price-query-type-xpath" name="price-query-type" value="xpath" checked>
+            XPath
+        </label>
+        <label>
+            <input type="radio" id="price-query-type-selector" name="price-query-type" value="selector">
+            Selector
+        </label>
+        <label>
+            <input type="radio" id="price-query-type-regex" name="price-query-type" value="regex">
+            Regex
+        </label>
+    </div>
+    <div class="control mb-10">
+        <input type="text" id="price-query" name="price-query" maxlength="191" required>
+        <button id="price-button">&#10012;</button>
     </div>
 
-    <form>
-        <label for="name">Name</label>
-        <input class="mb-10" type="text" id="name" name="name" maxlength="191" required>
+    <label for="stock-query">Stock Query (Optional)</label>
+    <div>
+        <label>
+            <input type="radio" id="stock-query-type-xpath" name="stock-query-type" value="xpath" checked>
+            XPath
+        </label>
+        <label>
+            <input type="radio" id="stock-query-type-selector" name="stock-query-type" value="selector">
+            Selector
+        </label>
+        <label>
+            <input type="radio" id="stock-query-type-regex" name="stock-query-type" value="regex">
+            Regex
+        </label>
+    </div>
+    <div class="control">
+        <input type="text" id="stock-query" name="stock-query" maxlength="191">
+        <button id="stock-button">&#10012;</button>
+    </div>
 
-        <label for="xpath-price">Price XPath</label>
-        <div class="control mb-10">
-            <input type="text" id="xpath-price" name="xpath_price"  maxlength="191" required>
-            <button id="price-button">&#10012;</button>
-        </div>
+    <div>
+        <input type="radio" id="contains" name="stock_contains" value="true" checked>
+        <label for="contains">Contains</label>
+        <input type="radio" id="does-not-contain" name="stock_contains" value="false">
+        <label for="does-not-contain">Does not contain</label>
+    </div>
 
-        <label for="xpath-stock">Stock XPath And Text (Optional)</label>
-        <div class="control">
-            <input type="text" id="xpath-stock" name="xpath_stock" maxlength="191">
-            <button id="stock-button">&#10012;</button>
-        </div>
+    <input class="mb-10" type="text" id="stock-text" name="stock-text" maxlength="191">
 
-        <div>
-            <input type="radio" id="contains" name="stock_contains" value="true" checked>
-            <label for="contains">Contains</label>
-            <input type="radio" id="does-not-contain" name="stock_contains" value="false">
-            <label for="does-not-contain">Does not contain</label>
-        </div>
-
-        <input class="mb-10" type="text" id="stock-text" name="stock_text" maxlength="191">
-
-        <label>Html Client</label>
-        <div class="mb-10">
+    <label>Html Client</label>
+    <div class="mb-10">
+        <label>
             <input type="radio" id="browsershot" name="client" value="browsershot" checked>
-            <label for="browsershot">Browsershot</label>
+            Browsershot
+        </label>
+        <label>
             <input type="radio" id="curl" name="client" value="curl">
-            <label for="curl">Curl</label>
+            Curl
+        </label>
+        <label>
             <input type="radio" id="guzzle" name="client" value="guzzle">
-            <label for="guzzle">Guzzle</label>
-        </div>
+            Guzzle
+        </label>
+        <label>
+            <input type="radio" id="puppeteer" name="client" value="puppeteer">
+            Puppeteer
+        </label>
+    </div>
 
-        <label for="interval_id">Interval</label>
-        <select class="mb-10" name="interval_id" id="interval_id">
-            <option value="1">None</option>
-            <option value="2">1 min</option>
-            <option value="3">3 mins</option>
-            <option value="4">5 mins</option>
-            <option value="5">10 mins</option>
-            <option value="6">15 mins</option>
-            <option value="7">30 mins</option>
-            <option value="8" selected>1 hour</option>
-            <option value="9">3 hours</option>
-            <option value="10">6 hours</option>
-            <option value="11">12 hours</option>
-            <option value="12">1 day</option>
-        </select>
+    <label for="interval_id">Interval</label>
+    <select class="mb-10" name="interval_id" id="interval_id">
+        <option value="1">None</option>
+        <option value="2">1 min</option>
+        <option value="3">3 mins</option>
+        <option value="4">5 mins</option>
+        <option value="5">10 mins</option>
+        <option value="6">15 mins</option>
+        <option value="7">30 mins</option>
+        <option value="8" selected>1 hour</option>
+        <option value="9">3 hours</option>
+        <option value="10">6 hours</option>
+        <option value="11">12 hours</option>
+        <option value="12">1 day</option>
+    </select>
 
-        <button id="add-button" class="mb-10" type="submit">Add watcher</button>
-    </form>
+    <button id="add-button" class="mb-10" type="submit">Add watcher</button>
+</form>
 
-    <button id="check-button" class="mb-10">Test</button>
+<button id="check-button" class="mb-10">Check</button>
 
-    <script src="popup.js"></script>
+<script src="popup.js"></script>
 </body>
 </html>
