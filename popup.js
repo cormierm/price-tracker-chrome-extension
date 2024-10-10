@@ -260,8 +260,9 @@ document.getElementById('check-button').addEventListener('click', async (event) 
 Price: ${res.value}
 Has Stock: ${res.has_stock}
 
-XPath Query Price InnerText: ${res.raw_value}
-XPath Query Stock InnerText: ${res.raw_stock_value}`);
+Price Inner Text: ${res.debug.value_inner_text}
+Stock Inner Text: ${res.debug.stock_inner_text}
+Stock Outer Html: ${res.debug.stock_outer_html}`);
             })
         }
     }).finally(() => {
