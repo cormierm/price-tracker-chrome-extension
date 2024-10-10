@@ -1,5 +1,5 @@
 function loadInputsFromStorage() {
-    chrome.storage.sync.get(['priceQuery', 'priceQueryType', 'stockQuery', 'stockQueryType', 'stockText', 'stockContains', 'client'], function (storage) {
+    chrome.storage.sync.get(['priceQuery', 'priceQueryType', 'stockQuery', 'stockQueryType', 'stockText', 'stockCondition', 'client'], function (storage) {
         console.log(storage)
         document.getElementById('price-query').value = storage.priceQuery || '';
         document.getElementById('price-query-type-xpath').checked = storage.priceQueryType === 'xpath';
@@ -10,9 +10,8 @@ function loadInputsFromStorage() {
         document.getElementById('stock-query-type-xpath').checked = storage.stockQueryType === 'xpath';
         document.getElementById('stock-query-type-selector').checked = storage.stockQueryType === 'selector';
         document.getElementById('stock-query-type-regex').checked = storage.stockQueryType === 'regex';
+        document.getElementById('stock-condition').value = storage.stockCondition;
         document.getElementById('stock-text').value = storage.stockText || '';
-        document.getElementById('contains').checked = storage.stockContains === "true";
-        document.getElementById('does-not-contain').checked = storage.stockContains === "false";
 
         document.getElementById('browsershot').checked = storage.client === 'browsershot';
         document.getElementById('curl').checked = storage.client === 'curl';
@@ -105,7 +104,7 @@ document.querySelector('form').addEventListener('submit', async (event) => {
         price_query_type: formData.get('price-query-type'),
         stock_query: formData.get('stock-query'),
         stock_query_type: formData.get('stock-query-type'),
-        stock_contains: formData.get('stock-contains') === 'true',
+        stock_condition: formData.get('stock-condition'),
         stock_text: formData.get('stock-text'),
         client: formData.get('client'),
         interval_id: formData.get('interval_id'),
@@ -133,7 +132,7 @@ document.querySelector('form').addEventListener('submit', async (event) => {
                 stockQuery: '',
                 stockQueryType: 'xpath',
                 stockText: '',
-                stockContains: true,
+                stockCondition: 'contains_text',
                 client: 'browsershot'
             });
 
@@ -193,14 +192,12 @@ document.getElementById('auto-fill').addEventListener('click', async () => {
                 document.getElementById('price-query-type-xpath').checked = res.price_query_type === 'xpath';
                 document.getElementById('price-query-type-selector').checked = res.price_query_type === 'selector';
                 document.getElementById('price-query-type-regex').checked = res.price_query_type === 'regex';
-
                 document.getElementById('stock-query').value = res.stock_query;
                 document.getElementById('stock-query-type-xpath').checked = res.stock_query_type === 'xpath';
                 document.getElementById('stock-query-type-selector').checked = res.stock_query_type === 'selector';
                 document.getElementById('stock-query-type-regex').checked = res.stock_query_type === 'regex';
                 document.getElementById('stock-text').value = res.stock_text;
-                document.getElementById('contains').checked = res.stock_contains;
-                document.getElementById('does-not-contain').checked = !res.stock_contains;
+                document.getElementById('stock-condition').value = res.stock_condition;
 
                 document.getElementById('browsershot').checked = res.client === 'browsershot';
                 document.getElementById('curl').checked = res.client === 'curl';
@@ -213,7 +210,7 @@ document.getElementById('auto-fill').addEventListener('click', async () => {
                     stockQuery: res.stock_query,
                     stockQueryType: res.stock_query_type,
                     stockText: res.stock_text,
-                    stockContains: res.stock_contains ? 'true' : 'false',
+                    stockCondition: res.stock_condition,
                     client: res.client,
                 });
             })
@@ -239,7 +236,7 @@ document.getElementById('check-button').addEventListener('click', async (event) 
             price_query_type: formData.get('price-query-type'),
             stock_query: formData.get('stock-query'),
             stock_query_type: formData.get('stock-query-type'),
-            stock_contains: formData.get('stock-contains') === 'true',
+            stock_condition: formData.get('stock-condition'),
             stock_text: formData.get('stock-text'),
             client: formData.get('client'),
         }),
@@ -283,15 +280,13 @@ addUpdateStorageListenerToInput('stock-query', 'stockQuery')
 addUpdateStorageListenerToRadio('stock-query-type-xpath', 'stockQueryType');
 addUpdateStorageListenerToRadio('stock-query-type-selector', 'stockQueryType');
 addUpdateStorageListenerToRadio('stock-query-type-regex', 'stockQueryType');
+addUpdateStorageListenerToInput('stock-condition', 'stockCondition')
 addUpdateStorageListenerToInput('stock-text', 'stockText')
 
 addUpdateStorageListenerToRadio('browsershot', 'client');
 addUpdateStorageListenerToRadio('curl', 'client');
 addUpdateStorageListenerToRadio('guzzle', 'client');
 addUpdateStorageListenerToRadio('puppeteer', 'client');
-
-addUpdateStorageListenerToRadio('contains', 'stockContains');
-addUpdateStorageListenerToRadio('does-not-contain', 'stockContains');
 
 addXPathListener('price-button', 'priceQuery');
 addXPathListener('stock-button', 'stockQuery');
